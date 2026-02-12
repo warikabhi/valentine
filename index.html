@@ -896,12 +896,36 @@
                 return;
             }
 
-            document.getElementById('wishText').textContent = '"' + wish + '"';
-            document.getElementById('wishBox').style.display = 'none';
-            document.getElementById('wishDisplay').style.display = 'block';
+            // Disable button while sending
+            const btn = document.querySelector('.btn-submit-wish');
+            btn.textContent = 'Sending... 💫';
+            btn.disabled = true;
 
-            // Extra celebration burst
-            createConfetti();
+            // Send wish to email via Web3Forms
+            const formData = new FormData();
+            formData.append('access_key', 'a8a58a62-bde4-4659-ba4c-1a9553fa86de');
+            formData.append('subject', '💕 Valentine Wish Received!');
+            formData.append('from_name', 'Your Valentine');
+            formData.append('message', 'Their wish: "' + wish + '"');
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('wishText').textContent = '"' + wish + '"';
+                document.getElementById('wishBox').style.display = 'none';
+                document.getElementById('wishDisplay').style.display = 'block';
+                createConfetti();
+            })
+            .catch(err => {
+                // Show wish on screen even if email fails
+                document.getElementById('wishText').textContent = '"' + wish + '"';
+                document.getElementById('wishBox').style.display = 'none';
+                document.getElementById('wishDisplay').style.display = 'block';
+                createConfetti();
+            });
         }
     </script>
 
