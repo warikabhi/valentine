@@ -621,7 +621,7 @@
                 <p class="question" style="margin-bottom: 10px;">This is the most important question...</p>
                 <div class="valentine-btns" id="valentineBtns">
                     <button class="btn-yes" onclick="sayYes()">Yes! 💕</button>
-                    <button class="btn-no" id="noBtn" onmouseover="runAway()" onclick="runAway()">No</button>
+                    <button class="btn-no" id="noBtn" onmouseover="runAway()" ontouchstart="runAway()" onclick="runAway()">No</button>
                 </div>
             </div>
         </div>
@@ -703,13 +703,19 @@
                 feedback.className = 'feedback correct';
                 feedback.textContent = '🎉 Yay! You know me so well!';
                 feedback.style.display = 'block';
-                btn.classList.add('sparkle');
 
-                // Disable all buttons in this question
-                btn.closest('.card').querySelectorAll('.btn').forEach(b => b.disabled = true);
+                // Disable all buttons in this question to prevent double-click
+                const allBtns = btn.closest('.card').querySelectorAll('.btn');
+                allBtns.forEach(b => {
+                    b.disabled = true;
+                    b.style.pointerEvents = 'none';
+                });
 
                 setTimeout(() => {
-                    showScreen(flow[questionId]);
+                    const nextScreen = flow[questionId];
+                    if (nextScreen) {
+                        showScreen(nextScreen);
+                    }
                 }, 1200);
             } else {
                 feedback.className = 'feedback wrong';
@@ -717,6 +723,7 @@
                 feedback.style.display = 'block';
                 btn.style.opacity = '0.5';
                 btn.disabled = true;
+                btn.style.pointerEvents = 'none';
 
                 setTimeout(() => {
                     feedback.style.display = 'none';
