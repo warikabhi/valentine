@@ -157,25 +157,17 @@
             overflow: hidden;
         }
 
-        .btn-correct {
-            background: linear-gradient(135deg, #ff6b9d, #ff4081);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
-        }
-
-        .btn-correct:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(255, 64, 129, 0.6);
-        }
-
+        .btn-correct,
         .btn-wrong {
             background: rgba(255, 255, 255, 0.1);
             color: #ffb3cc;
             border: 1px solid rgba(255, 107, 157, 0.3);
         }
 
+        .btn-correct:hover,
         .btn-wrong:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         /* Feedback */
@@ -524,6 +516,15 @@
             <p>Click the envelope to open...</p>
         </div>
 
+        <!-- Intro Message -->
+        <div class="screen message-screen" id="intro">
+            <div class="card">
+                <h2>Hey there! 💕</h2>
+                <p>Answer the Questions and let's see<br>how well you know me ?</p>
+                <button class="btn-next" onclick="showScreen('q1a')">Let's Start!</button>
+            </div>
+        </div>
+
         <!-- Question 1a -->
         <div class="screen" id="q1a">
             <div class="card">
@@ -692,7 +693,7 @@
         }
 
         function startQuiz() {
-            showScreen('q1a');
+            showScreen('intro');
         }
 
         function answer(btn, isCorrect, questionId) {
@@ -723,24 +724,32 @@
             }
         }
 
-        // Ready animation
+        // Ready animation with 5-second countdown
         function playReadyAnimation() {
             const container = document.getElementById('readyAnimation');
-            const texts = ['Are', 'You', 'Ready???'];
-            let i = 0;
+            container.innerHTML = '<div class="ready-text">Are You Ready???</div>';
 
-            function showNext() {
-                if (i < texts.length) {
-                    container.innerHTML = `<div class="ready-text">${texts[i]}</div>`;
-                    i++;
-                    setTimeout(showNext, 700);
+            let countdown = 5;
+            const countdownDiv = document.createElement('div');
+            countdownDiv.style.cssText = 'font-size: 4rem; color: #ff4081; font-weight: 700; margin-top: 20px;';
+            countdownDiv.textContent = countdown;
+            container.appendChild(countdownDiv);
+
+            const interval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    countdownDiv.textContent = countdown;
+                    countdownDiv.style.animation = 'none';
+                    void countdownDiv.offsetWidth;
+                    countdownDiv.style.animation = 'readyPulse 0.5s ease-in-out';
                 } else {
+                    clearInterval(interval);
+                    countdownDiv.textContent = '💖';
                     setTimeout(() => {
                         showScreen('valentine-question');
-                    }, 600);
+                    }, 500);
                 }
-            }
-            showNext();
+            }, 1000);
         }
 
         // No button run away logic
@@ -749,40 +758,45 @@
 
         function runAway() {
             noMoveCount++;
-            const container = document.getElementById('valentineBtns');
-            const containerRect = container.getBoundingClientRect();
-            const card = container.closest('.card');
-            const cardRect = card.getBoundingClientRect();
-
-            // Calculate random position within the card area
-            const maxX = cardRect.width - 120;
-            const maxY = cardRect.height - 60;
-
-            let newX = Math.random() * maxX - maxX / 2;
-            let newY = Math.random() * maxY - maxY / 2;
-
             noBtn.style.position = 'fixed';
-            noBtn.style.left = Math.max(20, Math.min(window.innerWidth - 130,
-                noBtn.getBoundingClientRect().left + (Math.random() - 0.5) * 300)) + 'px';
-            noBtn.style.top = Math.max(20, Math.min(window.innerHeight - 60,
-                noBtn.getBoundingClientRect().top + (Math.random() - 0.5) * 300)) + 'px';
 
-            // Make button smaller and change text as they try more
-            if (noMoveCount > 3) {
-                noBtn.textContent = "Can't catch me!";
-                noBtn.style.fontSize = '0.9rem';
-                noBtn.style.padding = '10px 25px';
+            // Get button dimensions
+            const btnRect = noBtn.getBoundingClientRect();
+            const btnWidth = btnRect.width;
+            const btnHeight = btnRect.height;
+
+            // Padding from edges to keep button fully visible
+            const padding = 20;
+            const maxLeft = window.innerWidth - btnWidth - padding;
+            const maxTop = window.innerHeight - btnHeight - padding;
+
+            // Generate random position within screen bounds
+            let newLeft = padding + Math.random() * (maxLeft - padding);
+            let newTop = padding + Math.random() * (maxTop - padding);
+
+            // Make sure it actually moves away from current position
+            const currentLeft = btnRect.left;
+            const currentTop = btnRect.top;
+            if (Math.abs(newLeft - currentLeft) < 100 && Math.abs(newTop - currentTop) < 100) {
+                newLeft = (currentLeft > window.innerWidth / 2) ? padding + Math.random() * (window.innerWidth / 3) : maxLeft - Math.random() * (window.innerWidth / 3);
+                newTop = (currentTop > window.innerHeight / 2) ? padding + Math.random() * (window.innerHeight / 3) : maxTop - Math.random() * (window.innerHeight / 3);
             }
-            if (noMoveCount > 6) {
-                noBtn.textContent = "Just say Yes! 😜";
-                noBtn.style.fontSize = '0.8rem';
-                noBtn.style.padding = '8px 20px';
-            }
-            if (noMoveCount > 9) {
-                noBtn.textContent = "Hehe! 🏃";
-                noBtn.style.fontSize = '0.7rem';
-                noBtn.style.padding = '6px 15px';
-            }
+
+            // Clamp within screen
+            newLeft = Math.max(padding, Math.min(maxLeft, newLeft));
+            newTop = Math.max(padding, Math.min(maxTop, newTop));
+
+            noBtn.style.left = newLeft + 'px';
+            noBtn.style.top = newTop + 'px';
+
+            // Change text as they try more (but keep same size so it's always catchable-looking)
+            const messages = [
+                "No", "No", "No",
+                "Can't catch me!", "Nope!", "Try again!",
+                "Just say Yes! 😜", "Haha!", "Too slow!",
+                "Hehe! 🏃", "Give up?", "Say Yes already! 💕"
+            ];
+            noBtn.textContent = messages[Math.min(noMoveCount, messages.length - 1)];
         }
 
         // Say Yes!
