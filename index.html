@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Here... 💌</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a0011, #2d0a1e, #1a0011);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Floating hearts background */
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            font-size: 20px;
+            animation: floatUp linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Landing screen */
+        #landing .envelope {
+            font-size: 80px;
+            cursor: pointer;
+            animation: pulse 1.5s ease-in-out infinite;
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+
+        #landing .envelope:hover {
+            transform: scale(1.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        #landing h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff6b9d;
+            font-size: 2.5rem;
+            margin-top: 20px;
+            text-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+        }
+
+        #landing p {
+            color: #ffb3cc;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        /* Card style */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 0 40px rgba(255, 107, 157, 0.1);
+        }
+
+        .card h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff6b9d;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .card p.question {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .card p.question-number {
+            color: #ff6b9d;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-correct {
+            background: linear-gradient(135deg, #ff6b9d, #ff4081);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+        }
+
+        .btn-correct:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 64, 129, 0.6);
+        }
+
+        .btn-wrong {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffb3cc;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+        }
+
+        .btn-wrong:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Feedback */
+        .feedback {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .feedback.correct {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .feedback.wrong {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ef9a9a;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        /* Message screen */
+        .message-screen {
+            color: #fff;
+        }
+
+        .message-screen h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff6b9d;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .message-screen p {
+            color: #ffb3cc;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .btn-next {
+            margin-top: 25px;
+            background: linear-gradient(135deg, #ff6b9d, #ff4081);
+            color: #fff;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 64, 129, 0.6);
+        }
+
+        /* Valentine Question */
+        #valentine-question {
+            position: relative;
+        }
+
+        #valentine-question h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff6b9d;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        #valentine-question .big-heart {
+            font-size: 80px;
+            animation: heartbeat 1s ease-in-out infinite;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+        }
+
+        .valentine-btns {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            position: relative;
+            min-height: 80px;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ff6b9d, #e91e63);
+            color: #fff;
+            padding: 16px 50px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(233, 30, 99, 0.5);
+            z-index: 10;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(233, 30, 99, 0.7);
+        }
+
+        .btn-no {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffb3cc;
+            padding: 16px 50px;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: absolute;
+            transition: all 0.15s ease;
+            z-index: 10;
+        }
+
+        /* Celebration */
+        #celebration {
+            position: relative;
+        }
+
+        #celebration h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff6b9d;
+            font-size: 3rem;
+            text-shadow: 0 0 30px rgba(255, 107, 157, 0.6);
+            margin-bottom: 10px;
+        }
+
+        #celebration .celebration-emoji {
+            font-size: 50px;
+            margin: 10px 0;
+        }
+
+        #celebration p {
+            color: #ffb3cc;
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+
+        .wish-box {
+            margin-top: 25px;
+        }
+
+        .wish-box label {
+            color: #ff6b9d;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .wish-box textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .wish-box textarea::placeholder {
+            color: rgba(255, 179, 204, 0.5);
+        }
+
+        .wish-box textarea:focus {
+            border-color: #ff6b9d;
+            box-shadow: 0 0 15px rgba(255, 107, 157, 0.2);
+        }
+
+        .btn-submit-wish {
+            margin-top: 15px;
+            background: linear-gradient(135deg, #ff6b9d, #ff4081);
+            color: #fff;
+            padding: 12px 35px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+        }
+
+        .btn-submit-wish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 64, 129, 0.6);
+        }
+
+        /* Balloons */
+        .balloon-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -150px;
+            width: 50px;
+            height: 65px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: balloonFloat linear forwards;
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes balloonFloat {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(15deg); opacity: 0.8; }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            z-index: 6;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotateZ(720deg); opacity: 0; }
+        }
+
+        /* Glitter */
+        .glitter {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            z-index: 7;
+            pointer-events: none;
+            animation: glitterAnim 1s ease-in-out forwards;
+        }
+
+        @keyframes glitterAnim {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Final wish display */
+        .wish-display {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 107, 157, 0.1);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 15px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .wish-display p.wish-label {
+            color: #ff6b9d;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .wish-display p.wish-text {
+            color: #fff;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Ready animation */
+        .ready-text {
+            font-size: 3rem;
+            color: #ff6b9d;
+            font-family: 'Dancing Script', cursive;
+            animation: readyPulse 0.5s ease-in-out;
+        }
+
+        @keyframes readyPulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Sparkle on correct */
+        @keyframes sparkle {
+            0% { box-shadow: 0 0 5px rgba(255, 107, 157, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 157, 0.8), 0 0 50px rgba(255, 64, 129, 0.4); }
+            100% { box-shadow: 0 0 5px rgba(255, 107, 157, 0.5); }
+        }
+
+        .sparkle {
+            animation: sparkle 0.6s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating hearts background -->
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <!-- Balloon container for celebration -->
+    <div class="balloon-container" id="balloonContainer"></div>
+
+    <div class="container">
+
+        <!-- Landing Screen -->
+        <div class="screen active" id="landing">
+            <div class="envelope" onclick="startQuiz()">💌</div>
+            <h1>You Have a Special Message!</h1>
+            <p>Click the envelope to open...</p>
+        </div>
+
+        <!-- Question 1a -->
+        <div class="screen" id="q1a">
+            <div class="card">
+                <p class="question-number">Question 1 of 4</p>
+                <h2>Let's see how well you know me!</h2>
+                <p class="question">The person with whom I spent a lot of time calling? 📞</p>
+                <div class="btn-group">
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q1a')">Pradya</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1a')">Babo</button>
+                </div>
+                <div class="feedback" id="feedback-q1a"></div>
+            </div>
+        </div>
+
+        <!-- Question 1b -->
+        <div class="screen" id="q1b">
+            <div class="card">
+                <p class="question-number">Question 2 of 4</p>
+                <h2>Hmm, this one's tricky...</h2>
+                <p class="question">Who is my Bollywood crush? 🎬</p>
+                <div class="btn-group">
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q1b')">Dipika</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1b')">Tamanna</button>
+                </div>
+                <div class="feedback" id="feedback-q1b"></div>
+            </div>
+        </div>
+
+        <!-- Question 1c - What was I wearing -->
+        <div class="screen" id="q1c">
+            <div class="card">
+                <p class="question-number">Question 3 of 4</p>
+                <h2>Think carefully now...</h2>
+                <p class="question">What was I wearing on our first meet? 👕</p>
+                <div class="btn-group">
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q1c')">Universal Pant</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1c')">A good looking sexy blue jeans 👖</button>
+                </div>
+                <div class="feedback" id="feedback-q1c"></div>
+            </div>
+        </div>
+
+        <!-- Question 1d - Who annoys me -->
+        <div class="screen" id="q1d">
+            <div class="card">
+                <p class="question-number">Question 4 of 4... almost!</p>
+                <h2>Who annoys me more? 😤</h2>
+                <p class="question">Take your best guess...</p>
+                <div class="btn-group">
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1d')">A girl with cute nose 👃</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1d')">A girl with cute face 😊</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1d')">A girl with cute eyes 👀</button>
+                </div>
+                <div class="feedback" id="feedback-q1d"></div>
+            </div>
+        </div>
+
+        <!-- Message before last question -->
+        <div class="screen message-screen" id="msg1">
+            <div class="card">
+                <h2>Okay okay...</h2>
+                <p>Now last question<br>then comes the surprise... 🎁</p>
+                <button class="btn-next" onclick="showScreen('q1e')">Let's Go!</button>
+            </div>
+        </div>
+
+        <!-- Question 1e - If I am dumb -->
+        <div class="screen" id="q1e">
+            <div class="card">
+                <p class="question-number">Bonus Question!</p>
+                <h2>If I am dumb, then who is dumber? 🤪</h2>
+                <div class="btn-group">
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1e')">Pradnya</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1e')">Babo</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1e')">Off course its me!</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q1e')">Everyone knows its me!</button>
+                </div>
+                <div class="feedback" id="feedback-q1e"></div>
+            </div>
+        </div>
+
+        <!-- Are you ready -->
+        <div class="screen message-screen" id="ready-screen">
+            <div class="card" style="padding: 60px 30px;">
+                <div id="readyAnimation"></div>
+            </div>
+        </div>
+
+        <!-- Valentine Question -->
+        <div class="screen" id="valentine-question">
+            <div class="card" style="padding: 40px 30px;">
+                <div class="big-heart">❤️</div>
+                <h2>Will You Be My Valentine?</h2>
+                <p class="question" style="margin-bottom: 10px;">This is the most important question...</p>
+                <div class="valentine-btns" id="valentineBtns">
+                    <button class="btn-yes" onclick="sayYes()">Yes! 💕</button>
+                    <button class="btn-no" id="noBtn" onmouseover="runAway()" onclick="runAway()">No</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Celebration -->
+        <div class="screen" id="celebration">
+            <div class="card">
+                <h1>Congratulations! 🎉</h1>
+                <div class="celebration-emoji">🥳🎊💕🎉💖</div>
+                <p style="font-size: 1.3rem; color: #fff;">I knew you'd say <strong style="color:#ff6b9d">YES!</strong></p>
+                <p>Happy Valentine's Day, my love! 💝</p>
+
+                <div class="wish-box" id="wishBox">
+                    <label>Tell me one wish... ✨</label>
+                    <textarea id="wishInput" rows="3" placeholder="Write your wish here..."></textarea>
+                    <button class="btn-submit-wish" onclick="submitWish()">Send My Wish 💫</button>
+                </div>
+
+                <div class="wish-display" id="wishDisplay">
+                    <p class="wish-label">Your Wish 💫</p>
+                    <p class="wish-text" id="wishText"></p>
+                    <p style="color: #ff6b9d; margin-top: 15px; font-family: 'Dancing Script', cursive; font-size: 1.4rem;">
+                        I'll make it come true! 💖
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Create floating hearts
+        function createFloatingHearts() {
+            const container = document.getElementById('heartsBg');
+            const hearts = ['💗', '💕', '💖', '💘', '✨', '💝'];
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('span');
+                heart.className = 'floating-heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (15 + Math.random() * 20) + 'px';
+                heart.style.animationDuration = (6 + Math.random() * 8) + 's';
+                heart.style.animationDelay = Math.random() * 10 + 's';
+                container.appendChild(heart);
+            }
+        }
+        createFloatingHearts();
+
+        // Screen flow
+        const flow = {
+            'q1a': 'q1b',
+            'q1b': 'q1c',
+            'q1c': 'q1d',
+            'q1d': 'msg1',
+            'q1e': 'ready-screen'
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const screen = document.getElementById(id);
+            screen.classList.remove('active');
+            // Force reflow for animation
+            void screen.offsetWidth;
+            screen.classList.add('active');
+
+            if (id === 'ready-screen') {
+                playReadyAnimation();
+            }
+        }
+
+        function startQuiz() {
+            showScreen('q1a');
+        }
+
+        function answer(btn, isCorrect, questionId) {
+            const feedback = document.getElementById('feedback-' + questionId);
+
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.textContent = '🎉 Yay! You know me so well!';
+                feedback.style.display = 'block';
+                btn.classList.add('sparkle');
+
+                // Disable all buttons in this question
+                btn.closest('.card').querySelectorAll('.btn').forEach(b => b.disabled = true);
+
+                setTimeout(() => {
+                    showScreen(flow[questionId]);
+                }, 1200);
+            } else {
+                feedback.className = 'feedback wrong';
+                feedback.textContent = '😅 Oops! Try again...';
+                feedback.style.display = 'block';
+                btn.style.opacity = '0.5';
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 1000);
+            }
+        }
+
+        // Ready animation
+        function playReadyAnimation() {
+            const container = document.getElementById('readyAnimation');
+            const texts = ['Are', 'You', 'Ready???'];
+            let i = 0;
+
+            function showNext() {
+                if (i < texts.length) {
+                    container.innerHTML = `<div class="ready-text">${texts[i]}</div>`;
+                    i++;
+                    setTimeout(showNext, 700);
+                } else {
+                    setTimeout(() => {
+                        showScreen('valentine-question');
+                    }, 600);
+                }
+            }
+            showNext();
+        }
+
+        // No button run away logic
+        const noBtn = document.getElementById('noBtn');
+        let noMoveCount = 0;
+
+        function runAway() {
+            noMoveCount++;
+            const container = document.getElementById('valentineBtns');
+            const containerRect = container.getBoundingClientRect();
+            const card = container.closest('.card');
+            const cardRect = card.getBoundingClientRect();
+
+            // Calculate random position within the card area
+            const maxX = cardRect.width - 120;
+            const maxY = cardRect.height - 60;
+
+            let newX = Math.random() * maxX - maxX / 2;
+            let newY = Math.random() * maxY - maxY / 2;
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = Math.max(20, Math.min(window.innerWidth - 130,
+                noBtn.getBoundingClientRect().left + (Math.random() - 0.5) * 300)) + 'px';
+            noBtn.style.top = Math.max(20, Math.min(window.innerHeight - 60,
+                noBtn.getBoundingClientRect().top + (Math.random() - 0.5) * 300)) + 'px';
+
+            // Make button smaller and change text as they try more
+            if (noMoveCount > 3) {
+                noBtn.textContent = "Can't catch me!";
+                noBtn.style.fontSize = '0.9rem';
+                noBtn.style.padding = '10px 25px';
+            }
+            if (noMoveCount > 6) {
+                noBtn.textContent = "Just say Yes! 😜";
+                noBtn.style.fontSize = '0.8rem';
+                noBtn.style.padding = '8px 20px';
+            }
+            if (noMoveCount > 9) {
+                noBtn.textContent = "Hehe! 🏃";
+                noBtn.style.fontSize = '0.7rem';
+                noBtn.style.padding = '6px 15px';
+            }
+        }
+
+        // Say Yes!
+        function sayYes() {
+            noBtn.style.display = 'none';
+            showScreen('celebration');
+            startCelebration();
+        }
+
+        // Celebration effects
+        function startCelebration() {
+            createBalloons();
+            createConfetti();
+            startGlitter();
+        }
+
+        function createBalloons() {
+            const container = document.getElementById('balloonContainer');
+            const colors = ['#ff6b9d', '#ff4081', '#e91e63', '#f48fb1', '#ff80ab',
+                           '#ff1744', '#d50000', '#ff5252', '#f50057', '#c51162'];
+
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const balloon = document.createElement('div');
+                    balloon.className = 'balloon';
+                    balloon.style.left = Math.random() * 100 + '%';
+                    balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    balloon.style.animationDuration = (4 + Math.random() * 4) + 's';
+                    balloon.style.animationDelay = Math.random() * 0.5 + 's';
+                    balloon.style.width = (40 + Math.random() * 30) + 'px';
+                    balloon.style.height = (50 + Math.random() * 35) + 'px';
+                    container.appendChild(balloon);
+
+                    setTimeout(() => balloon.remove(), 9000);
+                }, i * 200);
+            }
+
+            // Keep spawning balloons
+            setInterval(() => {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.left = Math.random() * 100 + '%';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.animationDuration = (4 + Math.random() * 4) + 's';
+                balloon.style.width = (40 + Math.random() * 30) + 'px';
+                balloon.style.height = (50 + Math.random() * 35) + 'px';
+                container.appendChild(balloon);
+                setTimeout(() => balloon.remove(), 9000);
+            }, 800);
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b9d', '#ff4081', '#ffd700', '#ff69b4', '#ff1493',
+                           '#00bcd4', '#8bc34a', '#ffeb3b', '#e91e63', '#9c27b0'];
+            const shapes = ['square', 'circle'];
+
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = (5 + Math.random() * 10) + 'px';
+                    confetti.style.height = (5 + Math.random() * 10) + 'px';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.animationDuration = (2 + Math.random() * 3) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 6000);
+                }, i * 50);
+            }
+
+            // Keep some confetti going
+            setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = (5 + Math.random() * 10) + 'px';
+                    confetti.style.height = (5 + Math.random() * 10) + 'px';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.animationDuration = (2 + Math.random() * 3) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 6000);
+                }
+            }, 2000);
+        }
+
+        function startGlitter() {
+            setInterval(() => {
+                for (let i = 0; i < 3; i++) {
+                    const glitter = document.createElement('div');
+                    glitter.className = 'glitter';
+                    glitter.style.left = Math.random() * 100 + '%';
+                    glitter.style.top = Math.random() * 100 + '%';
+                    glitter.style.backgroundColor = Math.random() > 0.5 ? '#ffd700' : '#fff';
+                    glitter.style.boxShadow = `0 0 6px ${glitter.style.backgroundColor}`;
+                    document.body.appendChild(glitter);
+                    setTimeout(() => glitter.remove(), 1000);
+                }
+            }, 300);
+        }
+
+        // Submit wish
+        function submitWish() {
+            const wish = document.getElementById('wishInput').value.trim();
+            if (wish === '') {
+                document.getElementById('wishInput').placeholder = 'Come on, tell me your wish! 💭';
+                document.getElementById('wishInput').style.borderColor = '#ff4081';
+                return;
+            }
+
+            document.getElementById('wishText').textContent = '"' + wish + '"';
+            document.getElementById('wishBox').style.display = 'none';
+            document.getElementById('wishDisplay').style.display = 'block';
+
+            // Extra celebration burst
+            createConfetti();
+        }
+    </script>
+
+</body>
+</html>
