@@ -295,7 +295,6 @@
             font-size: 1.3rem;
             font-weight: 700;
             cursor: pointer;
-            position: absolute;
             transition: all 0.15s ease;
             z-index: 10;
         }
@@ -497,6 +496,40 @@
         .sparkle {
             animation: sparkle 0.6s ease-in-out;
         }
+
+        /* Feelings section */
+        .feelings-box textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .feelings-box textarea::placeholder {
+            color: rgba(255, 179, 204, 0.5);
+        }
+
+        .feelings-box textarea:focus {
+            border-color: #ff6b9d;
+            box-shadow: 0 0 15px rgba(255, 107, 157, 0.2);
+        }
+
+        .final-msg {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 107, 157, 0.1);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 15px;
+            animation: fadeInUp 0.6s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -528,11 +561,11 @@
         <!-- Question 1a -->
         <div class="screen" id="q1a">
             <div class="card">
-                <p class="question-number">Question 1 of 4</p>
+                <p class="question-number">Question 1 of 6</p>
                 <h2>Let's see how well you know me!</h2>
                 <p class="question">The person with whom I spent a lot of time calling? 📞</p>
                 <div class="btn-group">
-                    <button class="btn btn-wrong" onclick="answer(this, false, 'q1a')">Pradya</button>
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q1a')">Pradnya</button>
                     <button class="btn btn-correct" onclick="answer(this, true, 'q1a')">Babo</button>
                 </div>
                 <div class="feedback" id="feedback-q1a"></div>
@@ -542,7 +575,7 @@
         <!-- Question 1b -->
         <div class="screen" id="q1b">
             <div class="card">
-                <p class="question-number">Question 2 of 4</p>
+                <p class="question-number">Question 2 of 6</p>
                 <h2>Hmm, this one's tricky...</h2>
                 <p class="question">Who is my Bollywood crush? 🎬</p>
                 <div class="btn-group">
@@ -553,10 +586,42 @@
             </div>
         </div>
 
+        <!-- Question - How many Abs -->
+        <div class="screen" id="q_abs">
+            <div class="card">
+                <p class="question-number">Question 3 of 6</p>
+                <h2>This one's easy... right? 💪</h2>
+                <p class="question">How many Abs do I have?</p>
+                <div class="btn-group">
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q_abs')">4</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q_abs')">6</button>
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q_abs')">0</button>
+                </div>
+                <div class="feedback" id="feedback-q_abs"></div>
+            </div>
+        </div>
+
+        <!-- Question - What Abhi likes to do with Babo -->
+        <div class="screen" id="q_abhi">
+            <div class="card">
+                <p class="question-number">Question 4 of 6</p>
+                <h2>What Abhi likes to do with Babo? 🤔</h2>
+                <div class="btn-group">
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q_abhi')">Prem</button>
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q_abhi')">Prem</button>
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q_abhi')">Travel</button>
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q_abhi')">Natak</button>
+                    <button class="btn btn-wrong" onclick="answer(this, false, 'q_abhi')">Movie</button>
+                    <button class="btn btn-correct" onclick="answer(this, true, 'q_abhi')">All of the above</button>
+                </div>
+                <div class="feedback" id="feedback-q_abhi"></div>
+            </div>
+        </div>
+
         <!-- Question 1c - What was I wearing -->
         <div class="screen" id="q1c">
             <div class="card">
-                <p class="question-number">Question 3 of 4</p>
+                <p class="question-number">Question 5 of 6</p>
                 <h2>Think carefully now...</h2>
                 <p class="question">What was I wearing on our first meet? 👕</p>
                 <div class="btn-group">
@@ -570,7 +635,7 @@
         <!-- Question 1d - Who annoys me -->
         <div class="screen" id="q1d">
             <div class="card">
-                <p class="question-number">Question 4 of 4... almost!</p>
+                <p class="question-number">Question 6 of 6... almost!</p>
                 <h2>Who annoys me more? 😤</h2>
                 <p class="question">Take your best guess...</p>
                 <div class="btn-group">
@@ -646,6 +711,32 @@
                     <p style="color: #ff6b9d; margin-top: 15px; font-family: 'Dancing Script', cursive; font-size: 1.4rem;">
                         I'll make it come true! 💖
                     </p>
+                    <button class="btn-next" style="margin-top: 20px;" onclick="showScreen('feelings')">Next 💕</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feelings / Free Text -->
+        <div class="screen" id="feelings">
+            <div class="card">
+                <h2 style="font-family: 'Dancing Script', cursive; color: #ff6b9d; font-size: 2rem; margin-bottom: 10px;">One more thing... 💕</h2>
+                <p style="color: #ffb3cc; font-size: 1.1rem; margin-bottom: 20px; line-height: 1.6;">
+                    Now, Babo tell me anything you feel about me,<br>
+                    Anything you want to say to me...
+                </p>
+                <div class="feelings-box">
+                    <textarea id="feelingsInput" rows="5" placeholder="Write your heart out..."></textarea>
+                    <button class="btn-submit-wish" onclick="submitFeelings()">Send 💌</button>
+                </div>
+
+                <div class="final-msg" id="finalMsg">
+                    <p style="color: #ff6b9d; font-family: 'Dancing Script', cursive; font-size: 1.8rem;">
+                        Thank you, my love! 💖
+                    </p>
+                    <p style="color: #ffb3cc; margin-top: 10px; font-size: 1rem;">
+                        You just made my day special! 🥰<br>
+                        Happy Valentine's Day! 💕
+                    </p>
                 </div>
             </div>
         </div>
@@ -670,10 +761,15 @@
         }
         createFloatingHearts();
 
+        // Track all answers for email
+        const responses = {};
+
         // Screen flow
         const flow = {
             'q1a': 'q1b',
-            'q1b': 'q1c',
+            'q1b': 'q_abs',
+            'q_abs': 'q_abhi',
+            'q_abhi': 'q1c',
             'q1c': 'q1d',
             'q1d': 'msg1',
             'q1e': 'ready-screen'
@@ -696,8 +792,22 @@
             showScreen('intro');
         }
 
+        // Question labels for email
+        const questionLabels = {
+            'q1a': 'Person I spend time calling',
+            'q1b': 'Bollywood crush',
+            'q_abs': 'How many Abs',
+            'q_abhi': 'What Abhi likes to do with Babo',
+            'q1c': 'What I was wearing on first meet',
+            'q1d': 'Who annoys me more',
+            'q1e': 'If I am dumb who is dumber'
+        };
+
         function answer(btn, isCorrect, questionId) {
             const feedback = document.getElementById('feedback-' + questionId);
+
+            // Track the answer
+            responses[questionId] = btn.textContent;
 
             if (isCorrect) {
                 feedback.className = 'feedback correct';
@@ -908,7 +1018,7 @@
             }, 300);
         }
 
-        // Submit wish
+        // Submit wish (save locally, email later with feelings)
         function submitWish() {
             const wish = document.getElementById('wishInput').value.trim();
             if (wish === '') {
@@ -917,17 +1027,49 @@
                 return;
             }
 
-            // Disable button while sending
-            const btn = document.querySelector('.btn-submit-wish');
-            btn.textContent = 'Sending... 💫';
+            responses['wish'] = wish;
+            document.getElementById('wishText').textContent = '"' + wish + '"';
+            document.getElementById('wishBox').style.display = 'none';
+            document.getElementById('wishDisplay').style.display = 'block';
+            createConfetti();
+        }
+
+        // Submit feelings and send EVERYTHING via email
+        function submitFeelings() {
+            const feelings = document.getElementById('feelingsInput').value.trim();
+            if (feelings === '') {
+                document.getElementById('feelingsInput').placeholder = 'Come on, say something! 💭';
+                document.getElementById('feelingsInput').style.borderColor = '#ff4081';
+                return;
+            }
+
+            responses['feelings'] = feelings;
+
+            // Disable button
+            const btn = document.querySelector('#feelings .btn-submit-wish');
+            btn.textContent = 'Sending... 💌';
             btn.disabled = true;
 
-            // Send wish to email via Web3Forms
+            // Build email message with all responses
+            let message = '💕 VALENTINE RESPONSES 💕\n\n';
+            message += '── Quiz Answers ──\n';
+            for (const [qId, answer] of Object.entries(responses)) {
+                if (qId !== 'wish' && qId !== 'feelings') {
+                    const label = questionLabels[qId] || qId;
+                    message += '• ' + label + ': ' + answer + '\n';
+                }
+            }
+            message += '\n── Wish ──\n';
+            message += (responses['wish'] || 'No wish entered') + '\n';
+            message += '\n── Feelings / Message ──\n';
+            message += feelings + '\n';
+
+            // Send everything via Web3Forms
             const formData = new FormData();
             formData.append('access_key', 'a8a58a62-bde4-4659-ba4c-1a9553fa86de');
-            formData.append('subject', '💕 Valentine Wish Received!');
-            formData.append('from_name', 'Your Valentine');
-            formData.append('message', 'Their wish: "' + wish + '"');
+            formData.append('subject', '💕 Valentine - All Responses Received!');
+            formData.append('from_name', 'Your Valentine (Babo)');
+            formData.append('message', message);
 
             fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
@@ -935,16 +1077,13 @@
             })
             .then(res => res.json())
             .then(data => {
-                document.getElementById('wishText').textContent = '"' + wish + '"';
-                document.getElementById('wishBox').style.display = 'none';
-                document.getElementById('wishDisplay').style.display = 'block';
+                document.querySelector('#feelings .feelings-box').style.display = 'none';
+                document.getElementById('finalMsg').style.display = 'block';
                 createConfetti();
             })
             .catch(err => {
-                // Show wish on screen even if email fails
-                document.getElementById('wishText').textContent = '"' + wish + '"';
-                document.getElementById('wishBox').style.display = 'none';
-                document.getElementById('wishDisplay').style.display = 'block';
+                document.querySelector('#feelings .feelings-box').style.display = 'none';
+                document.getElementById('finalMsg').style.display = 'block';
                 createConfetti();
             });
         }
